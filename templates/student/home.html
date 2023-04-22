@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Student</title>
+
+  <!-- Favicons -->
+  <link href="/static/img/favicon.png" rel="icon">
+  <link href="/static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Vendor CSS Files -->
+  <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/static/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/static/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/static/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/static/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/static/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="/static/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="home.php" class="logo d-flex align-items-center">
+        <img src="/static/img/logo.png" alt="">
+        <span class="d-none d-lg-block">Student</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{name}}</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Log Out</span>
+              </a>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li>
+
+      </ul>
+    </nav>
+
+ </header>
+
+<aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+    
+      <li class="nav-item">
+        <a class="nav-link" href="/student">
+          <i class="bi bi-grid"></i>
+          <span>Home</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/student/feedback">
+          <i class="bi bi-card-text"></i>
+          <span>Feedbacks</span>
+        </a>
+      </li>
+    </ul>
+    
+</aside><!-- End Sidebar-->
+    
+<main id="main" class="main">
+
+
+<div class="pagetitle container">
+    <div style="display:flex;justify-content:space-between">
+        <h1>Send Your Feedback</h1>
+    </div>
+</div>
+<div class="container">
+    <form action="/student/add" method="post">
+        <div class="mb-3">
+            <label class="form-label">Subject :</label>
+            <select name="subjectid" class="form-control" required>
+                <option value="" selected disabled>Select Subject</option>
+                {% for i in rows%}
+                    <option value="{{i['id']}}">{{i['subject']}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Feedback :</label>
+            <textarea type="text" name="data" class="form-control" rows="3" cols="3" placeholder="Subject Name" required></textarea>
+        </div>
+        <div class="mb-2 text-end">
+            <button class="btn btn-primary ">Submit</button>
+        </div>
+    </form>
+</div>
+</main>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="/static/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/vendor/chart.js/chart.umd.js"></script>
+<script src="/static/vendor/echarts/echarts.min.js"></script>
+<script src="/static/vendor/quill/quill.min.js"></script>
+<script src="/static/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="/static/vendor/tinymce/tinymce.min.js"></script>
+<script src="/static/vendor/php-email-form/validate.js"></script>
+
+
+<script src="/static/js/main.js"></script>
+<script>
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      if(urlParams.get('err')){
+        document.write("<div id='err' style='position:fixed;bottom:30px; right:30px;background-color:#FF0000;padding:10px;border-radius:10px;box-shadow:2px 2px 4px #aaa;color:white;font-weight:600'>"+urlParams.get('err')+"</div>")
+      }
+      setTimeout(()=>{
+          document.getElementById("err").style.display="none"
+      }, 3000)
+      if(urlParams.get('msg')){
+        document.write("<div id='msg' style='position:fixed;bottom:30px; right:30px;background-color:#4CAF50;padding:10px;border-radius:10px;box-shadow:2px 2px 4px #aaa;color:white;font-weight:600'>"+urlParams.get('msg')+"</div>")
+      }
+      setTimeout(()=>{
+          document.getElementById("msg").style.display="none"
+      }, 3000)
+  </script>
+</body>
+
+</html>
