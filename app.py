@@ -57,8 +57,9 @@ def student():
 @app.route("/student/add", methods =["GET", "POST"])  
 def student_feedback_add():
     if request.method == "POST":
+        print(request.form["q1"])
         con = sqlite3.connect("database.db")
-        con.execute("INSERT into feedback(data, subjectid ,studentid) values (?,?,?)",(request.form["data"],request.form["subjectid"],session["id"]))
+        con.execute("INSERT into feedback(data, subjectid ,studentid , q1,q2,q3,q4,q5,q6,q7,q8,q9,q10) values (?,?,?,?,?,?,?,?,?,?,?,?,?)",(request.form["data"],request.form["subjectid"],session["id"],request.form["q1"],request.form["q2"],request.form["q3"],request.form["q4"],request.form["q5"],request.form["q6"],request.form["q7"],request.form["q8"],request.form["q9"],request.form["q10"]))
         con.commit()
         return redirect("/student/feedback?msg=Feedback Submitted Successfully!")
     return redirect("/")
@@ -69,19 +70,9 @@ def student_feedback():
     con = sqlite3.connect("database.db")  
     con.row_factory = sqlite3.Row  
     cur = con.cursor()  
-    cur.execute("select feedback.id,feedback.data,subject.subject from feedback INNER JOIN subject ON feedback.subjectid=subject.id WHERE feedback.studentid=?",(str(session["id"])))  
+    cur.execute("select feedback.*,subject.subject from feedback INNER JOIN subject ON feedback.subjectid=subject.id WHERE feedback.studentid=?",(str(session["id"])))  
     rows = cur.fetchall()
     return render_template("student/feedback.html",name=name,rows=rows)
-
-@app.route("/student/feedback/delete", methods =["GET", "POST"])  
-def student_feedback_delete():
-    if request.method == "POST":
-        con = sqlite3.connect("database.db")
-        con.execute("DELETE FROM feedback WHERE id=?",(request.form["id"]))
-        con.commit()
-        return redirect("/student/feedback?msg=Feedback Deleted Successfully!")
-    return redirect("/")
-
 
 @app.route("/staff")  
 def staff():
@@ -117,10 +108,12 @@ def staff_home():
 def staff_feedback():
     con = sqlite3.connect("database.db")  
     con.row_factory = sqlite3.Row  
-    cur = con.cursor()  
-    cur.execute("select feedback.id,feedback.data,subject.subject from feedback INNER JOIN subject ON feedback.subjectid=subject.id WHERE subject.staffid=?",(str(session["staffid"])))  
+    cur = con.cursor()
+    cur.execute("select feedback.*,subject.subject from feedback INNER JOIN subject ON feedback.subjectid=subject.id WHERE subject.staffid=?",(str(session["staffid"])))  
     rows = cur.fetchall()
-    return render_template("staff/feedback.html",staffname=session["staffname"],rows=rows)
+    cur.execute("select * from student")
+    data = cur.fetchall()
+    return render_template("staff/feedback.html",staffname=session["staffname"],rows=rows,data=data)
 
 @app.route("/staff/feedback/delete", methods =["GET", "POST"])  
 def staff_feedback_delete():
@@ -204,7 +197,7 @@ def admin_subject_add():
         con = sqlite3.connect("database.db")
         con.execute("INSERT into subject(subject, staffid , dept, sem) values (?,?,?,?)",(request.form["subject"],request.form["staffid"],request.form["dept"],request.form["sem"]))
         con.commit()
-        return redirect("/admin/subject?msg=Staff added Successfully!")
+        return redirect("/admin/subject?msg=Subject added Successfully!")
     return redirect("/admin")
 
 
@@ -240,9 +233,11 @@ def admin_feedback():
     con = sqlite3.connect("database.db")  
     con.row_factory = sqlite3.Row  
     cur = con.cursor()  
-    cur.execute("select feedback.id,feedback.data,subject.subject from feedback INNER JOIN subject ON feedback.subjectid=subject.id")  
+    cur.execute("select feedback.*,subject.subject from feedback INNER JOIN subject ON feedback.subjectid=subject.id")  
     rows = cur.fetchall()
-    return render_template("admin/feedback.html",rows = rows)
+    cur.execute("select * from student")  
+    data = cur.fetchall()
+    return render_template("admin/feedback.html",rows = rows,data=data)
 
 @app.route("/admin/feedback/delete", methods =["GET", "POST"])  
 def admin_feedback_delete():
@@ -253,12 +248,11 @@ def admin_feedback_delete():
         return redirect("/admin/feedback?msg=Feddback Deleted Successfully!")
     return redirect("/admin")
 
-
 @app.route("/table")
 def table():
     con = sqlite3.connect("database.db")
     con.execute("CREATE TABLE student (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,dept TEXT NOT NULL,year TEXT NOT NULL,sem TEXT NOT NULL,regno TEXT NOT NULL,email TEXT NOT NULL,password TEXT NOT NULL)")
     con.execute("CREATE TABLE staff (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,dept TEXT NOT NULL,staffid TEXT NOT NULL,email TEXT NOT NULL,password TEXT NOT NULL)")
     con.execute("CREATE TABLE subject (id INTEGER PRIMARY KEY AUTOINCREMENT,subject TEXT NOT NULL,staffid TEXT NOT NULL,dept TEXT NOT NULL,sem TEXT NOT NULL)")
-    con.execute("CREATE TABLE feedback(id INTEGER PRIMARY KEY AUTOINCREMENT,data INTEGER NOT NULL,subjectid TEXT NOT NULL,studentid TEXT NOT NULL)")
+    con.execute("CREATE TABLE feedback(id INTEGER PRIMARY KEY AUTOINCREMENT,data INTEGER NOT NULL,subjectid TEXT NOT NULL,studentid TEXT NOT NULL,q1 TEXT NOT NULL,q2 TEXT NOT NULL,q3 TEXT NOT NULL,q4 TEXT NOT NULL,q5 TEXT NOT NULL,q6 TEXT NOT NULL,q7 TEXT NOT NULL,q8 TEXT NOT NULL,q9 TEXT NOT NULL,q10 TEXT NOT NULL)")
     return "Table Created"
